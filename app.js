@@ -64,9 +64,16 @@ function generateButtons(teamA, teamB) {
 
 // Helper to create a Pokémon button
 function createButton(pokemon, container, lr) {
-  const filename = pokemon.toLowerCase().replace(/[\s.'!]/g, '-') + ".png";
+  const filename = pokemon.toLowerCase().replace(/[\s.'!]/g, '');
   const imgBtn = document.createElement("img");
-  imgBtn.src = `images/sprites/${filename}`;
+  try{
+    if(lr == "left") imgBtn.src=`https://play.pokemonshowdown.com/sprites/gen5-back/${filename}` + `.png`;
+    else imgBtn.src=`https://play.pokemonshowdown.com/sprites/gen5/${filename}` + `.png`;
+  }
+  catch(error){
+    imgBtn.src = `images/sprites/${filename}` + `.png`;
+  }
+  
   imgBtn.alt = pokemon;
   imgBtn.className = "guess-btn-img";
 
