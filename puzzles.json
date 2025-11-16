@@ -1,6 +1,6 @@
 [
     {
-        "date": "2025-11-17",
+        "date": "2025-11-16",
         "imageA": "images/games/lavos_mcmeghan.png",
         "imageB": "images/games/mcmeghan.png",
         "format": "Gen 5 OU",
@@ -11,8 +11,8 @@
         "leadB": "Scizor"
     },
     {
-        "date": "2025-11-16",
-        "imageA": "images/games/electricwin_pkel.png",
+        "date": "2025-11-17",
+        "imageA": "images/games/graybg.png",
         "imageB": "images/games/mcmeghan.png",
         "format": "Gen 9 OU",
         "replay": "https://replay.pokemonshowdown.com/smogtours-gen9ou-885942",

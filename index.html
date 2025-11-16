@@ -10,11 +10,11 @@
       text-align: center;
       margin: 0 auto;
       padding: 0px;
-      background-color: #555;
+      background-color: #252525;
     }
     .header {
       overflow: hidden;
-      background-color: #252525;
+      background-color: #555;
       padding: 20px 10px;
     }
 
@@ -22,7 +22,7 @@
       float: left;
       color: whitesmoke;
       text-align: center;
-      padding: 12px;
+      padding: 0px;
       text-decoration: none;
       font-size: 18px; 
       line-height: 25px;
@@ -50,8 +50,8 @@
 
     #header-logo{
       top: 0px;
-      width: 120px;
-      height: 120px;
+      width: 80px;
+      height: 80px;
       position: relative;
     }
 
@@ -60,65 +60,80 @@
       color: white
     }
 
-    /* Team image + switch button */
-    .team-images-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      margin-top:10px;
-    }
-
-    #team-image {
-      width: 100%;
-      max-width: 800px;
-      border: 0px
-    }
-
-    /*#switch-side-btn {
+    #confirm-btn {
       padding: 6px 12px;
       font-size: 0.9rem;
       cursor: pointer;
       border-radius: 6px;
       border: 1px solid #333;
       background-color: #f5f5f5;
-    }*/
+    }
 
     /* Two columns layout for guesses */
-    .guess-buttons-wrapper {
+    #battle-wrapper {
+      position: relative;
+      width: 100%;         /* use full page width */
       display: flex;
       justify-content: center;
-      gap: 100px;
-      margin: 10px 0;
+      margin-top: 40px;
+    }
+
+    /* The vertical strip that extends beyond battlefield */
+    #center-strip {
+      position: absolute;
+      top: -40px;     /* extends above battlefield */
+      bottom: -600px;  /* extends below battlefield */
+      width: 880px;   /* narrow vertical strip width */
+      background: #393944;
+      z-index: 1;     /* behind buttons */
+    }
+
+    /* Your existing battlefield */
+    #battlefield {
+      position: relative;
+      width: 800px;
+      height: 400px;
+      z-index: 3;          /* bring buttons above strip */
+      margin: 10px auto;
+      background-image: url("images/bgs/bg-darkbeach.jpg");
+      background-size: cover;  /* or contain */
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
     .left-buttons, .right-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, 128px); /* 3 columns */
-      grid-template-rows: repeat(2, 128px);    /* 2 rows */
-      gap: 8px;
-      justify-content: center;
-      align-content: center;
+      position: absolute;
+      top: 50%;              /* vertically center */
+      transform: translateY(-50%);
+      width: 200px;          /* container width */
+      height: 200px;         /* container height */
     }
 
-    /* Image guess buttons */
+    .left-buttons {
+      left: 50px;            /* distance from left side */
+    }
+
+    .right-buttons {
+      right: 50px;           /* distance from right side */
+    }
+
     .guess-btn-img {
+      position: absolute;    /* crucial for free positioning */
       width: 128px;
       height: 128px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.3s;
+      transition:all 0.3s;
     }
     .guess-btn-img:hover{
-      filter: brightness(1.1);
-      background-color: #585858;
+      filter: brightness(1.5);
+      /*background-color: #585858;*/
     }
 
     #message {
       font-weight: bold;
       margin-top: 10px;
       font-size: 1.1rem;
+      position: relative;
+      z-index: 10;
     }
 
     #streak {
@@ -127,13 +142,15 @@
     }
 
     #reset-btn {
-      margin-top: 10px;
+      margin-top: 0px;
       padding: 8px 16px;
       font-size: 0.9rem;
       border-radius: 6px;
       cursor: pointer;
-      background-color: #f5f5f5;
-      border: 1px solid #333;
+      background-color: #7e7d7d;
+      border: 0px solid #333;
+      position: relative;
+      z-index: 10;
     }
 
     @media (max-width: 500px) {
@@ -170,15 +187,16 @@
   </div>
 <body> 
 
-  <div class="team-images-container">
-    <img id="team-image" src="" alt="Team Image">
-    <!--<button id="switch-side-btn">Switch Side</button>-->
+
+  <div id="battle-wrapper">
+    <div id="center-strip"></div>
+
+    <div id="battlefield">
+      <div class="left-buttons"></div>
+      <div class="right-buttons"></div>
+    </div>
   </div>
 
-  <div class="guess-buttons-wrapper">
-    <div class="left-buttons"></div>
-    <div class="right-buttons"></div>
-  </div>
 
   <div id="message"></div>
   <div id="streak">Streak: 0</div>

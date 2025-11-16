@@ -1,3 +1,2 @@
--change buttons so that the others reset when one is clicked
--make the background stay light when img is clicked
+-add white bars and icons to each side of bg
 -add confirm guess buttons

@@ -1,10 +1,27 @@
 const today = new Date().toISOString().slice(0, 10);
 let puzzle = null;
-let currentSide = "A"; // track which team image is shown
 let leftpressed = false
 let leftguess = ""
 let rightpressed = false
 let rightguess = ""
+
+const leftPositions = [
+  {x: 75, y: 142},
+  {x: 140, y: 146},
+  {x: 205, y: 150},
+  {x: 270, y: 154},
+  {x: 335, y: 158},
+  {x: 400, y: 162}
+];
+
+const rightPositions = [
+  {x: 260, y: -244},
+  {x: 325, y: -240},
+  {x: 390, y: -236},
+  {x: 455, y: -232},
+  {x: 510, y: -228},
+  {x: 575, y: -224}
+];
 
 let state = {
   finished: false,
@@ -27,8 +44,6 @@ async function loadPuzzle() {
     }
 
     // Start with Team A
-    currentSide = "A";
-    document.getElementById("team-image").src = puzzle.imageA;
 
     generateButtons(puzzle.teamA, puzzle.teamB);
 
@@ -44,7 +59,7 @@ async function loadPuzzle() {
   }
 }
 
-// Generate image buttons
+// Generate image buttons in V formation
 function generateButtons(teamA, teamB) {
   const allGuesses = [...teamA, ...teamB]; // keep duplicates
 
@@ -54,56 +69,92 @@ function generateButtons(teamA, teamB) {
   leftContainer.innerHTML = "";
   rightContainer.innerHTML = "";
 
+  // Ensure container is relative
+  leftContainer.style.position = "relative";
+  rightContainer.style.position = "relative";
+
   const leftButtons = allGuesses.slice(0, 6);
   const rightButtons = allGuesses.slice(6, 12);
 
-  leftButtons.forEach(pokemon => createButton(pokemon, leftContainer, "left"));
-  rightButtons.forEach(pokemon => createButton(pokemon, rightContainer, "right"));
-
+  leftButtons.forEach((pokemon, i) => createButton(pokemon, leftContainer, "left", i));
+  rightButtons.forEach((pokemon, i) => createButton(pokemon, rightContainer, "right", i));
 }
 
 // Helper to create a Pokémon button
-function createButton(pokemon, container, lr) {
+function createButton(pokemon, container, side, index) {
   const filename = pokemon.toLowerCase().replace(/[\s.'!]/g, '');
   const imgBtn = document.createElement("img");
-  try{
-    if(lr == "left") imgBtn.src=`https://play.pokemonshowdown.com/sprites/gen5-back/${filename}` + `.png`;
-    else imgBtn.src=`https://play.pokemonshowdown.com/sprites/gen5/${filename}` + `.png`;
+  try {
+    if (side === "left") imgBtn.src = `https://play.pokemonshowdown.com/sprites/gen5-back/${filename}.png`;
+    else imgBtn.src = `https://play.pokemonshowdown.com/sprites/gen5/${filename}.png`;
+  } catch (error) {
+    imgBtn.src = `images/sprites/${filename}.png`;
   }
-  catch(error){
-    imgBtn.src = `images/sprites/${filename}` + `.png`;
-  }
-  
+
   imgBtn.alt = pokemon;
   imgBtn.className = "guess-btn-img";
+  imgBtn.style.position = "absolute";
 
-  imgBtn.onclick = () => handleGuess(imgBtn, pokemon, lr);
+  // Use index to position in V formation
+  const pos = side === "left" ? leftPositions[index] : rightPositions[index];
+  imgBtn.style.left = `${pos.x}px`;
+  imgBtn.style.top = `${pos.y}px`;
+
+  imgBtn.onclick = () => handleGuess(imgBtn, pokemon, side);
 
   container.appendChild(imgBtn);
 }
 
-// Handle a guess click
+
+let leftSelectedBtn = null;
+let rightSelectedBtn = null;
+
 function handleGuess(imgBtn, pokemon, lr) {
   if (state.finished) return;
- 
-  if(lr == "left") {
+
+  // Determine which side
+  const container = lr === "left"
+    ? document.querySelector(".left-buttons")
+    : document.querySelector(".right-buttons");
+
+  // Clear previous selection on this side
+  if (lr === "left" && leftSelectedBtn) leftSelectedBtn.style.filter = "";
+  if (lr === "right" && rightSelectedBtn) rightSelectedBtn.style.filter = "";
+
+  // Mark this as currently selected
+  imgBtn.style.filter = "brightness(1.25) saturate(1.25) drop-shadow(0 0 10px whitesmoke)";
+  if (lr === "left") {
+    leftSelectedBtn = imgBtn;
     leftpressed = true;
     leftguess = pokemon;
-  }
-  else if(lr == "right") {
+  } else {
+    rightSelectedBtn = imgBtn;
     rightpressed = true;
     rightguess = pokemon;
   }
-  else return;
 
-  imgBtn.style.filter = "brightness(1.25) saturate(1.25)";
-  if(leftpressed && rightpressed) 
-  {
-    if(leftguess == puzzle.leadA && rightguess == puzzle.leadB) endGame(true);
-    else endGame(false);
+  // Only check after both sides have a guess
+  if (leftpressed && rightpressed) {
+    const leftCorrect = leftguess === puzzle.leadA;
+    const rightCorrect = rightguess === puzzle.leadB;
+
+    // Apply green/red glow per side
+    if (leftSelectedBtn) {
+      leftSelectedBtn.style.filter = leftCorrect
+        ? "brightness(1.25) saturate(1.25) drop-shadow(0 0 10px #00ff00)"
+        : "brightness(1.25) saturate(1.25) drop-shadow(0 0 10px #ff0000)";
+    }
+
+    if (rightSelectedBtn) {
+      rightSelectedBtn.style.filter = rightCorrect
+        ? "brightness(1.25) saturate(1.25) drop-shadow(0 0 10px #00ff00)"
+        : "brightness(1.25) saturate(1.25) drop-shadow(0 0 10px #ff0000)";
+    }
+
+    endGame(leftCorrect && rightCorrect);
   }
-  
 }
+
 
 // End game logic
 function endGame(won) {
@@ -173,7 +224,7 @@ document.getElementById("reset-btn").addEventListener("click", () => {
   state.finished = false;
   state.won = false;
   document.querySelectorAll(".guess-btn-img").forEach(btn => {
-    btn.style.border = "1px solid #333";
+    btn.style.border = "0px solid #333";
     btn.style.opacity = "1";
     btn.style.pointerEvents = "auto";
   });
@@ -185,6 +236,8 @@ document.getElementById("reset-btn").addEventListener("click", () => {
   document.getElementById("streak").textContent = "Streak: 0";
   loadPuzzle();
 });
+
+
 
 // Initialize
 window.onload = loadPuzzle;
