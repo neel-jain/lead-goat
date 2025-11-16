@@ -88,16 +88,8 @@ function handleGuess(imgBtn, pokemon, lr) {
     rightguess = pokemon;
   }
   else return;
-  imgBtn.style.filter = "brightness(1.25) saturate(1.25)";
-  // Red/green tint
-  /*if (correct) {
-    imgBtn.style.filter = "brightness(1.3) saturate(200%) sepia(100%) hue-rotate(100deg)"
-  } else {
-    imgBtn.style.filter = "brightness(0.7) saturate(200%) sepia(100%) hue-rotate(-50deg)";
-  }*/
-  
-  //imgBtn.style.pointerEvents = "none";
 
+  imgBtn.style.filter = "brightness(1.25) saturate(1.25)";
   if(leftpressed && rightpressed) 
   {
     if(leftguess == puzzle.leadA && rightguess == puzzle.leadB) endGame(true);
@@ -186,19 +178,6 @@ document.getElementById("reset-btn").addEventListener("click", () => {
   document.getElementById("streak").textContent = "Streak: 0";
   loadPuzzle();
 });
-
-// Switch side button
-/*document.getElementById("switch-side-btn").addEventListener("click", () => {
-  if (!puzzle) return;
-
-  if (currentSide === "A") {
-    currentSide = "B";
-    document.getElementById("team-image").src = puzzle.imageB;
-  } else {
-    currentSide = "A";
-    document.getElementById("team-image").src = puzzle.imageA;
-  }
-});*/
 
 // Initialize
 window.onload = loadPuzzle;
