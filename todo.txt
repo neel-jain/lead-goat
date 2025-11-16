@@ -1,0 +1,3 @@
+-change buttons so that the others reset when one is clicked
+-make the background stay light when img is clicked
+-add confirm guess buttons

@@ -1,9 +1,12 @@
 const today = new Date().toISOString().slice(0, 10);
 let puzzle = null;
 let currentSide = "A"; // track which team image is shown
+let leftpressed = false
+let leftguess = ""
+let rightpressed = false
+let rightguess = ""
 
 let state = {
-  guesses: 0,
   finished: false,
   won: false,
 };
@@ -32,7 +35,6 @@ async function loadPuzzle() {
     if (save.lastPlayed === today) {
       state.finished = true;
       state.won = save.won;
-      state.guesses = save.guesses;
       showEndScreen();
       lockButtons();
     }
@@ -55,47 +57,53 @@ function generateButtons(teamA, teamB) {
   const leftButtons = allGuesses.slice(0, 6);
   const rightButtons = allGuesses.slice(6, 12);
 
-  leftButtons.forEach(pokemon => createButton(pokemon, leftContainer));
-  rightButtons.forEach(pokemon => createButton(pokemon, rightContainer));
+  leftButtons.forEach(pokemon => createButton(pokemon, leftContainer, "left"));
+  rightButtons.forEach(pokemon => createButton(pokemon, rightContainer, "right"));
 
 }
 
 // Helper to create a Pokémon button
-function createButton(pokemon, container) {
+function createButton(pokemon, container, lr) {
   const filename = pokemon.toLowerCase().replace(/[\s.'!]/g, '-') + ".png";
   const imgBtn = document.createElement("img");
   imgBtn.src = `images/sprites/${filename}`;
   imgBtn.alt = pokemon;
   imgBtn.className = "guess-btn-img";
 
-  imgBtn.onclick = () => handleGuess(imgBtn, pokemon);
+  imgBtn.onclick = () => handleGuess(imgBtn, pokemon, lr);
 
   container.appendChild(imgBtn);
 }
 
 // Handle a guess click
-function handleGuess(imgBtn, pokemon) {
-  if (state.finished || state.guesses >= 4) return;
-
-  state.guesses++;
-
-  const correct = pokemon === puzzle.leadA || pokemon === puzzle.leadB;
-
+function handleGuess(imgBtn, pokemon, lr) {
+  if (state.finished) return;
+ 
+  if(lr == "left") {
+    leftpressed = true;
+    leftguess = pokemon;
+  }
+  else if(lr == "right") {
+    rightpressed = true;
+    rightguess = pokemon;
+  }
+  else return;
+  imgBtn.style.filter = "brightness(1.25) saturate(1.25)";
   // Red/green tint
-  if (correct) {
-    imgBtn.style.filter = "brightness(0.7) saturate(200%) sepia(100%) hue-rotate(100deg)";
+  /*if (correct) {
+    imgBtn.style.filter = "brightness(1.3) saturate(200%) sepia(100%) hue-rotate(100deg)"
   } else {
     imgBtn.style.filter = "brightness(0.7) saturate(200%) sepia(100%) hue-rotate(-50deg)";
-  }
+  }*/
+  
+  //imgBtn.style.pointerEvents = "none";
 
-  imgBtn.style.opacity = "0.7";
-  imgBtn.style.pointerEvents = "none";
-
-  if (correct) {
-    endGame(true);
-  } else if (state.guesses === 4) {
-    endGame(false);
+  if(leftpressed && rightpressed) 
+  {
+    if(leftguess == puzzle.leadA && rightguess == puzzle.leadB) endGame(true);
+    else endGame(false);
   }
+  
 }
 
 // End game logic
@@ -117,7 +125,6 @@ function endGame(won) {
   localStorage.setItem("dailyGame", JSON.stringify({
     lastPlayed: today,
     won: won,
-    guesses: state.guesses,
     streak: newStreak,
   }));
 
@@ -132,9 +139,9 @@ function showEndScreen() {
   const gameSave = JSON.parse(localStorage.getItem("dailyGame"));
 
   if (state.won) {
-    message.textContent = `You got it in ${state.guesses} guesses!`;
+    message.textContent = `You got it!`;
   } else {
-    message.textContent = `You used all 4 guesses! Correct leads: ${puzzle.leadA} / ${puzzle.leadB}`;
+    message.textContent = `You didnt get it! Correct leads: ${puzzle.leadA} / ${puzzle.leadB}`;
   }
 
   streakEl.textContent = `Streak: ${gameSave.streak}`;
@@ -143,18 +150,27 @@ function showEndScreen() {
 function lockButtons() {
   document.querySelectorAll(".guess-btn-img").forEach(btn => btn.style.pointerEvents = "none");
 }
+function resetImgs(){
+  document.querySelectorAll(".guess-btn-img").forEach(btn => {
+    btn.style.border = "0px solid #333";
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+  });
+}
 
 // Helper for streak
 function yesterdayDate() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 // Reset button
 document.getElementById("reset-btn").addEventListener("click", () => {
   localStorage.removeItem("dailyGame");
-  state.guesses = 0;
   state.finished = false;
   state.won = false;
   document.querySelectorAll(".guess-btn-img").forEach(btn => {
@@ -162,13 +178,17 @@ document.getElementById("reset-btn").addEventListener("click", () => {
     btn.style.opacity = "1";
     btn.style.pointerEvents = "auto";
   });
+  rightpressed = false
+  leftpressed = false
+  rightguess = ""
+  leftguess = ""
   document.getElementById("message").textContent = "";
   document.getElementById("streak").textContent = "Streak: 0";
   loadPuzzle();
 });
 
 // Switch side button
-document.getElementById("switch-side-btn").addEventListener("click", () => {
+/*document.getElementById("switch-side-btn").addEventListener("click", () => {
   if (!puzzle) return;
 
   if (currentSide === "A") {
@@ -178,7 +198,7 @@ document.getElementById("switch-side-btn").addEventListener("click", () => {
     currentSide = "A";
     document.getElementById("team-image").src = puzzle.imageA;
   }
-});
+});*/
 
 // Initialize
 window.onload = loadPuzzle;

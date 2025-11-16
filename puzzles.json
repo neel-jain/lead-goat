@@ -1,6 +1,6 @@
 [
     {
-        "date": "2025-11-16",
+        "date": "2025-11-17",
         "imageA": "images/games/lavos_mcmeghan.png",
         "imageB": "images/games/mcmeghan.png",
         "format": "Gen 5 OU",
@@ -9,5 +9,16 @@
         "leadA": "Starmie",
         "teamB": ["Politoed", "Scizor", "Keldeo", "Terrakion", "Garchomp", "Thundurus-Therian"],
         "leadB": "Scizor"
+    },
+    {
+        "date": "2025-11-16",
+        "imageA": "images/games/electricwin_pkel.png",
+        "imageB": "images/games/mcmeghan.png",
+        "format": "Gen 9 OU",
+        "replay": "https://replay.pokemonshowdown.com/smogtours-gen9ou-885942",
+        "teamA": ["Zapdos", "Kingambit", "Ogerpon", "Great Tusk", "Slowking-Galar", "Rillaboom"],
+        "leadA": "Rillaboom",
+        "teamB": ["Darkrai", "Ting-Lu", "Slowking-Galar", "Dragonite", "Gholdengo", "Great Tusk"],
+        "leadB": "Slowking-Galar"
     }
 ]
